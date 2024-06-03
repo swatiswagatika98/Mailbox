@@ -1,19 +1,19 @@
-import React, { useState, useMemo } from "react";
+
+
+import React, { useState } from "react";
 import JoditEditor from "jodit-react";
-import './TextEditor.css';
+import "./TextEditor.css";
+import { useDispatch } from "react-redux";
+import { addEmail } from "../Redux/Slices/StoreEmail";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../Firebase";
 
 export default function App() {
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [content, setContent] = useState("");
-
-  const config = useMemo(
-    () => ({
-      buttons: "bold,italic,underline,image,fontsize", // Specify the buttons to display
-    }),
-    []
-  );
+  const dispatch = useDispatch();
 
   const handleEditorChange = (newContent) => {
     setContent(newContent);
@@ -31,12 +31,19 @@ export default function App() {
     setEmailBody(event.target.value);
   };
 
-  const handleSendEmail = () => {
-    // Implement your logic to send the email here
-    console.log("To:", to);
-    console.log("Subject:", subject);
-    console.log("Email Body:", emailBody);
-    console.log("Content:", content);
+  const handleSendEmail = async () => {
+    const emailObj = {
+      to,
+      subject,
+      emailBody: content,
+    };
+    try {
+      await setDoc(doc(db, 'sendEmail', to), emailObj);
+      alert("Email sent successfully");
+    } catch (err) {
+      alert("Error sending email: " + err);
+      console.log(err);
+    }
   };
 
   return (
@@ -63,21 +70,12 @@ export default function App() {
       </div>
 
       <div className="input_span_body">
-        <input
-          type="text"
-          placeholder="Write your email"
-          className="input_text"
-          onChange={handleEmailBodyChange}
-          value={emailBody}
+        <JoditEditor
+          value={content}
+          tabIndex={1}
+          onChange={handleEditorChange}
         />
       </div>
-
-      <JoditEditor
-        value={content}
-        config={config}
-        tabIndex={1}
-        onChange={handleEditorChange}
-      />
 
       <button className="send-button" onClick={handleSendEmail}>
         Send

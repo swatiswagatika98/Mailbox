@@ -9,3 +9,22 @@ export default function storeEmail() {
     </div>
   )
 }
+
+
+const StoreEmail = createSlice({
+    name: "storeEmailSlices",
+    initialState: {
+        user:null,
+    },
+    reducers: {
+        addEmail: (state, action) => {
+           state.user = action.payload;
+           console.log(state.user)
+        },
+
+    },
+
+    
+});
+
+export const { addEmail } = StoreEmail.actions;

@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import './Signup.css';
 
 import { auth } from '../../Firebase';
